@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <section class="container">
+        <h2>TODO App</h2>
+        <div class="add-task-bar">
+            <span>Add New Task</span>
+            <form method="get" action="/" style="display:inline;">
+                <button type="submit" name="showAdd" value="1" class="add-btn">+</button>
+            </form>
+        </div>
+
+        <h3>Tasks</h3>
+        <div id="tasks-list">
+            <% if (tasks.length===0) { %>
+                <div style="color:#888; margin-top:2em;">No tasks yet.</div>
+                <% } %>
+                    <% tasks.forEach(function(task) { %>
+                        <div class="task-card">
+                            <h4>
+                                <%= task.title %>
+                            </h4>
+                            <div class="date">
+                                <%= task.date %>
+                            </div>
+                            <div class="desc">
+                                <%= task.desc %>
+                            </div>
+                            <div class="task-actions">
+                                <form method="get" action="/edit-task" style="display:inline;">
+                                    <input type="hidden" name="id" value="<%= task.id %>">
+                                    <button title="Edit" type="submit"
+                                        style="font-size:1.2rem; color:#444; background:none; border:none; cursor:pointer;">&#9998;</button>
+                                </form>
+                                <form method="get" action="/delete-task" style="display:inline;">
+                                    <input type="hidden" name="id" value="<%= task.id %>">
+                                    <button title="Delete" type="submit"
+                                        style="font-size:1.2rem; color:#444; background:none; border:none; cursor:pointer;">&#128465;</button>
+                                </form>
+                            </div>
+                        </div>
+                        <% }); %>
+        </div>
+    </section>
+
+    <% if (editTask || (typeof showAdd !=='undefined' && showAdd)) { %>
+        <div class="modal" id="taskModal" style="display:block;">
+            <div class="modal-content">
+                <a href="/" class="close" style="text-decoration:none;">&times;</a>
+                <h2>
+                    <%= editTask ? 'Edit Task' : 'Add Task' %>
+                </h2>
+                <form id="taskForm" method="post" action="<%= editTask ? '/edit-task' : '/add-task' %>">
+                    <% if (editTask) { %>
+                        <input type="hidden" name="id" value="<%= editTask.id %>">
+                        <% } %>
+                            <input type="text" id="taskTitle" name="taskTitle" placeholder="Task Title"
+                                value="<%= editTask ? editTask.title : '' %>" required>
+                            <input type="date" id="taskDate" name="taskDate"
+                                value="<%= editTask ? editTask.date : '' %>" required>
+                            <textarea id="taskDesc" name="taskDesc"
+                                placeholder="Description"><%= editTask ? editTask.desc : '' %></textarea>
+                            <button type="submit" class="add-btn">
+                                <%= editTask ? 'Update Task' : 'Add Task' %>
+                            </button>
+                </form>
+            </div>
+        </div>
+        <% } %>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const modal = document.getElementById('taskModal');
+                    const closeBtn = document.querySelector('.close');
+
+                    if (closeBtn && modal) {
+                        closeBtn.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            modal.style.display = 'none';
+                            window.location.href = '/';
+                        });
+                    }
+                });
+            </script>
+</body>
+
+</html>
